@@ -17,7 +17,7 @@ A Quart-based web application for machine learning model interactions, specifica
 1. Clone the repository
 ```bash
 git clone https://github.com/ThreadDotRun/Identificator.git
-cd ml-model-interface
+cd Identificator
 ```
 
 2. Install dependencies
