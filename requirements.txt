@@ -1,0 +1,10 @@
+beautifulsoup4==4.12.3
+classify==0.5.0
+finetune==0.10.0
+Pillow==11.1.0
+quart==0.20.0
+Requests==2.32.3
+torch==2.5.1
+torchvision==0.20.1
+transformers==4.48.1
+Werkzeug==3.1.3

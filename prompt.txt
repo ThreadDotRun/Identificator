@@ -1,0 +1,37 @@
+git push
+fatal: The current branch main has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+
+Copy
+git push --set-upstream origin main
+
+Claude-3.5-Sonnet
+
+Poe
+This Git error occurs when you're trying to push to a branch that hasn't been linked to a remote branch yet. Here's how to fix it:
+
+Run the suggested command to set up the upstream branch:
+
+bash
+
+Copy
+git push --set-upstream origin main
+Or you can use the shorter -u flag:
+
+bash
+
+Copy
+git push -u origin main
+This command does two things:
+
+Pushes your local main branch to the remote repository
+Sets up tracking between your local main branch and the remote main branch
+After running this command once, you can use simple git push in the future for this branch.
+
+
+git remote add origin https://github.com/ThreadDotRun/Identificator.git
+error: remote origin already exists.
+
+ThreadDotRun/Identificator · GitHub (https://github.com/ThreadDotRun/Identificator)
+HTML · 158 KB
