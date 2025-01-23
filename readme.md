@@ -22,7 +22,7 @@ cd ml-model-interface
 
 2. Install dependencies
 ```bash
-pip install quart werkzeug
+pip install -r requirements.txt
 ```
 
 ## Running the Application
