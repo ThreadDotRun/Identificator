@@ -16,7 +16,7 @@ A Quart-based web application for machine learning model interactions, specifica
 ## Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/ml-model-interface.git
+git clone https://github.com/ThreadDotRun/Identificator.git
 cd ml-model-interface
 ```
 
