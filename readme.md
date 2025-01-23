@@ -27,7 +27,7 @@ pip install quart werkzeug
 
 ## Running the Application
 ```bash
-python app.py
+python Discriminator.py
 ```
 Access the interface at `http://localhost:5000`
 
