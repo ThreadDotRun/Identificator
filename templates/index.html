@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ML Model Interface</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .upload-form { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .results { margin-top: 20px; padding: 20px; border: 1px solid #4caf50; background-color: #e8f5e9; }
+        .error { margin-top: 20px; padding: 20px; border: 1px solid #f44336; background-color: #ffebee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ML Model Interface</h1>
+
+        <!-- Fine-tuning Form -->
+        <div class="upload-form">
+            <h2>Fine-tune Model</h2>
+            <form id="finetune-form" enctype="multipart/form-data">
+                <p>Upload ZIP file containing image folders:</p>
+                <input type="file" id="zip-file" name="file" accept=".zip" required>
+                <button type="submit">Upload and Fine-tune</button>
+            </form>
+        </div>
+
+        <!-- Fine-tuning Results Section -->
+        <div id="finetune-results-container" class="results" style="display: none;">
+            <h2>Fine-tuning Results</h2>
+            <p><strong>Loss History:</strong></p>
+            <ul id="finetune-loss-results"></ul>
+        </div>
+
+        <!-- Classification Form -->
+        <div class="upload-form">
+            <h2>Classify Image</h2>
+            <form id="classify-form" enctype="multipart/form-data">
+                <p>Upload image for classification:</p>
+                <input type="file" id="image-file" name="file" accept="image/*" required>
+                <button type="submit">Upload and Classify</button>
+            </form>
+        </div>
+
+        <!-- Classification Results Section -->
+        <div id="results-container" class="results" style="display: none;">
+            <h2>Classification Results</h2>
+            <p><strong>Image:</strong> <span id="image-name"></span></p>
+            <p><strong>Results:</strong></p>
+            <ul id="classification-results"></ul>
+        </div>
+
+        <!-- Error Section -->
+        <div id="error-container" class="error" style="display: none;">
+            <h2>Error</h2>
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // Fine-tuning Form Submission
+        document.getElementById('finetune-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('zip-file');
+            if (!fileInput.files.length) {
+                alert('Please select a ZIP file to upload.');
+                return;
+            }
+
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/finetune', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(errorData.error || 'An unexpected error occurred.');
+                    return;
+                }
+
+                const data = await response.json();
+                showFineTuneResults(data.lossHistory);
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again later.');
+            }
+        });
+
+        function showFineTuneResults(lossHistory) {
+            document.getElementById('finetune-results-container').style.display = 'block';
+            document.getElementById('error-container').style.display = 'none';
+
+            const resultsList = document.getElementById('finetune-loss-results');
+            resultsList.innerHTML = ''; // Clear previous results
+
+            for (const loss of lossHistory) {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Epoch ${loss.epoch}: Loss = ${loss.value}`;
+                resultsList.appendChild(listItem);
+            }
+        }
+
+        // Classification Logic (Unchanged from previous version)
+        // ...
+    
+        document.getElementById('classify-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent form from submitting the default way
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('image-file');
+            if (!fileInput.files.length) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(errorData.error || 'An unexpected error occurred.');
+                    return;
+                }
+
+                const data = await response.json();
+                showResults(data.filename, data.results);
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again later.');
+            }
+        });
+
+        function showResults(filename, results) {
+            document.getElementById('results-container').style.display = 'block';
+            document.getElementById('error-container').style.display = 'none';
+
+            document.getElementById('image-name').textContent = filename;
+            const resultsList = document.getElementById('classification-results');
+            resultsList.innerHTML = ''; // Clear previous results
+
+            for (const [label, confidence] of Object.entries(results)) {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${label}: ${confidence}%`;
+                resultsList.appendChild(listItem);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+
+            document.getElementById('error-message').textContent = message;
+        }
+    </script>
+</body>
+</html>
