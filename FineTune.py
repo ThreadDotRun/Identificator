@@ -123,8 +123,3 @@ class FineTune:
 		save_name = f"{self.model_name.replace('/', '-')}_{timestamp}_{Path(folder_name).name}"
 		self.model.save_pretrained(save_name)
 		print(f"\nModel saved as: {save_name}")
-
-	
-# Example usage
-finetuner = FineTune('openai/clip-vit-base-patch32')
-finetuner.fine_tune('./images/')
