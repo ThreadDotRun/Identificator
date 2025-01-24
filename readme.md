@@ -3,6 +3,8 @@
 ## Overview
 A Quart-based web application for machine learning model interactions, specifically designed for image-based fine-tuning and classification tasks. Using this app you can fine tune open models on your images (in folders by category) and then infer new images against these new categories.
 
+![Demo MP4](./media/Identificator.mp4)
+
 ## Features
 - Fine-tune machine learning models using image datasets
 - Classify images through a web interface
