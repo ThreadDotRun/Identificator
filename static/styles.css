@@ -1,11 +1,16 @@
 body 
-{
-    background-color: #333;
-    color: yellow;
+{ 
+	background-color: #333;    
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    margin: 20px;     
+    color: white;
 }
+
+.container { max-width: 800px; margin: 0 auto; }
+.upload-form { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+.finetune-form { color: gray; margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+.results { margin-top: 20px; padding: 20px; border: 1px solid #4caf50; background-color: #e8f5e9; }
+.error { margin-top: 20px; padding: 20px; border: 1px solid #f44336; background-color: #ffebee; }
 
 /* Header */
 header {
@@ -69,10 +74,36 @@ input[type="submit"] {
 img {
     width: 95px; /* Initial size */
     height: 85px; /* Initial size */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Centering adjustment */
+    position: sticky;        
     display: none; /* Hidden initially */
 }
-
+.csv_classes {
+  width: 100%; /* Makes the input box take up full width of its container */
+  height: 150px; /* Increases height for better visibility */
+  font-size: 16px; /* Adjusts the font size for better readability */
+  padding: 10px; /* Adds padding inside the textbox for comfort */
+  box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+  border: 1px solid #ccc; /* Adds a light border */
+  border-radius: 5px; /* Rounds the corners */
+  resize: vertical; /* Allows users to resize the textbox vertically */
+  overflow-y: auto; /* Ensures a vertical scrollbar appears when needed */
+  text-align: left; /* Aligns text horizontally to the left */
+  vertical-align: top; /* Aligns text vertically to the top */
+}
+H1
+{
+	text-align: center;
+}
+H2
+{
+	text-align: center;
+	font-size: 14pt;
+	color: lightcyan;
+}
+.results
+{
+	background-color: black;
+	color: yellow;
+	font-family: monospace;
+	font-size: 16pt;
+}

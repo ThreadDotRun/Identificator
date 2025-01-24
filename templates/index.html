@@ -2,25 +2,22 @@
 <html>
 <head>
     <title>ML Model Interface</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .upload-form { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
-        .results { margin-top: 20px; padding: 20px; border: 1px solid #4caf50; background-color: #e8f5e9; }
-        .error { margin-top: 20px; padding: 20px; border: 1px solid #f44336; background-color: #ffebee; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">   
 </head>
 <body>
     <div class="container">
-        <h1>ML Model Interface</h1>
+        <h1>Identificator</h1>
+        <h2>        
+            <p>Right now this uses 'openai/clip-vit-base-patch32' but this will soon be trainable and configurable.</p>
+        <h2>
 
         <!-- Fine-tuning Form -->
         <div class="upload-form">
             <h2>Fine-tune Model</h2>
             <form id="finetune-form" enctype="multipart/form-data">
-                <p>Upload ZIP file containing image folders:</p>
+                <p>Upload ZIP file containing image folders (coming soon!):</p>
                 <input type="file" id="zip-file" name="file" accept=".zip" required>
-                <button type="submit">Upload and Fine-tune</button>
+                <button type="submit" disabled>Upload and Fine-tune</button>
             </form>
         </div>
 
@@ -31,12 +28,18 @@
             <ul id="finetune-loss-results"></ul>
         </div>
 
-        <!-- Classification Form -->
+        <!-- Classification Form (updated) -->
         <div class="upload-form">
             <h2>Classify Image</h2>
             <form id="classify-form" enctype="multipart/form-data">
                 <p>Upload image for classification:</p>
                 <input type="file" id="image-file" name="file" accept="image/*" required>
+                <!-- Added image preview container -->
+                <div class="image-preview" style="margin: 1em 0;">
+                    <img id="classimg" style="max-width: 300px; display: none;">
+                </div>
+                <p>CSV Class List<textarea id="classes-csv" name="classes" class="csv_classes" required 
+                     placeholder="e.g., cat,dog,bird"></textarea></p>
                 <button type="submit">Upload and Classify</button>
             </form>
         </div>
@@ -57,6 +60,19 @@
     </div>
 
     <script>
+        document.getElementById('image-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('classimg');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
         // Fine-tuning Form Submission
         document.getElementById('finetune-form').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -106,17 +122,49 @@
         // Classification Logic (Unchanged from previous version)
         // ...
     
+        // Updated Classification Form Submission
         document.getElementById('classify-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent form from submitting the default way
+            event.preventDefault();
 
+            // CSV Validation and Sanitization
+            const csvInput = document.getElementById('classes-csv');
+            let csvValue = csvInput.value.trim();
+
+            // Sanitize input
+            const sanitized = csvValue
+                .replace(/[^a-zA-Z,]/g, '') 
+                .toLowerCase()
+                .replace(/,+/g, ',')       
+                .replace(/^,|,$/g, '');    
+
+            csvInput.value = sanitized;
+            const elements = sanitized.split(',').filter(e => e !== '');
+
+            // Validation checks
+            if (elements.length === 0) {
+                alert('Error: Please enter at least one valid class');
+                return;
+            }
+            if (elements.length > 5) {
+                alert('Error: Maximum 5 classes allowed');
+                return;
+            }
+            if (elements.some(e => !/^[a-z]+$/.test(e))) {
+                alert('Error: Classes must contain only letters');
+                return;
+            }
+
+            // Prepare form data
             const formData = new FormData();
             const fileInput = document.getElementById('image-file');
+            
             if (!fileInput.files.length) {
                 alert('Please select a file to upload.');
                 return;
             }
 
             formData.append('file', fileInput.files[0]);
+            formData.append('classes', elements.join(',')); // Include classes in request
 
             try {
                 const response = await fetch('/classify', {
@@ -131,7 +179,7 @@
                 }
 
                 const data = await response.json();
-                showResults(data.filename, data.results);
+                showResults(data.filename, data.results); // Correctly show results
             } catch (error) {
                 showError('Failed to connect to the server. Please try again later.');
             }
@@ -140,7 +188,7 @@
         function showResults(filename, results) {
             document.getElementById('results-container').style.display = 'block';
             document.getElementById('error-container').style.display = 'none';
-
+ 
             document.getElementById('image-name').textContent = filename;
             const resultsList = document.getElementById('classification-results');
             resultsList.innerHTML = ''; // Clear previous results
@@ -158,6 +206,50 @@
 
             document.getElementById('error-message').textContent = message;
         }
+
+        function validateCSVInput(event) {
+            event.preventDefault(); // Take control of form submission
+            const csvInput = document.getElementById('classes-csv');
+            let csvValue = csvInput.value;
+
+            // Sanitization: Keep only letters and commas, convert to lowercase
+            const sanitized = csvValue
+                .replace(/[^a-zA-Z,]/g, '') // Allow letters and commas
+                .toLowerCase()
+                .replace(/,+/g, ',')       // Remove consecutive commas
+                .replace(/^,|,$/g, '');    // Remove leading/trailing commas
+
+            // Update textarea with cleaned value
+            csvInput.value = sanitized;
+
+            // Split into non-empty elements
+            const elements = sanitized.split(',').filter(e => e.trim() !== '');
+
+            // Validation checks
+            let isValid = true;
+            
+            if (elements.length === 0) {
+                alert('Error: Please enter at least one valid class');
+                isValid = false;
+            }
+            else if (elements.length > 5) {
+                alert('Error: Maximum 5 classes allowed');
+                isValid = false;
+            }
+            else if (elements.some(e => !e.match(/^[a-z]+$/))) {
+                alert('Error: Classes must contain only letters');
+                isValid = false;
+            }
+
+            // Submit form if valid
+            if (isValid) {
+                //alert(`CSV Data is Valid: ${elements}`);
+                event.target.submit(); // Programmatically submit the form
+            }
+            
+            return false; // Always prevent default submission
+        }
+
     </script>
 </body>
 </html>
