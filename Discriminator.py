@@ -29,7 +29,7 @@ def get_upload_folder(filename):
 
 @app.route('/finetune', methods=['POST'])
 async def finetune_endpoint():
-	upload_folder = get_upload_folder()
+	upload_folder = get_upload_folder("finetune")  # Ensure a unique folder name
 	os.makedirs(upload_folder, exist_ok=True)
 
 	if 'file' not in await request.files:
@@ -53,12 +53,17 @@ async def finetune_endpoint():
 		
 		with zipfile.ZipFile(zip_path, 'r') as zip_ref:
 			zip_ref.extractall(extract_dir)
-			
-		return {
-			'message': 'File uploaded and extracted successfully',
-			'extract_path': extract_dir
-		}, 200
 		
+		# Fine-tuning process
+		fine_tune = FineTune("openai/clip-vit-base-patch32")
+		loss_history = fine_tune.fine_tune(extract_dir)  # Pass the extracted folder to fine_tune method
+
+		# Return loss history for display
+		return {
+			'message': 'Model fine-tuned successfully',
+			'lossHistory': loss_history  # Return the loss history
+		}, 200
+
 	except Exception as e:
 		return {'error': f'Error processing zip file: {str(e)}'}, 500
 
@@ -67,66 +72,66 @@ import asyncio
 
 @app.route('/classify', methods=['POST'])
 async def classify_endpoint():
-    try:
-        # Get form data asynchronously
-        form_data = await request.form
-        files = await request.files
-        
-        # Validate file
-        if 'file' not in files:
-            return {'error': 'No file provided'}, 400
-            
-        file = files['file']
-        classes = form_data.get('classes', '')
-        
-        # Validate inputs
-        if not file.filename:
-            return {'error': 'No selected file'}, 400
-        if not classes:
-            return {'error': 'No classes provided'}, 400
+	try:
+		# Get form data asynchronously
+		form_data = await request.form
+		files = await request.files
+		
+		# Validate file
+		if 'file' not in files:
+			return {'error': 'No file provided'}, 400
+			
+		file = files['file']
+		classes = form_data.get('classes', '')
+		
+		# Validate inputs
+		if not file.filename:
+			return {'error': 'No selected file'}, 400
+		if not classes:
+			return {'error': 'No classes provided'}, 400
 
-        # Process class list
-        class_list = [cls.strip() for cls in classes.split(',') if cls.strip()]
-        if not class_list:
-            return {'error': 'Empty class list'}, 400
-        if len(class_list) > 5:
-            return {'error': 'Maximum 5 classes allowed'}, 400
+		# Process class list
+		class_list = [cls.strip() for cls in classes.split(',') if cls.strip()]
+		if not class_list:
+			return {'error': 'Empty class list'}, 400
+		if len(class_list) > 5:
+			return {'error': 'Maximum 5 classes allowed'}, 400
 
-        # File handling
-        if not allowed_file(file.filename):
-            return {'error': 'Invalid file type'}, 400
+		# File handling
+		if not allowed_file(file.filename):
+			return {'error': 'Invalid file type'}, 400
 
-        filename = secure_filename(file.filename)
-        upload_folder = get_upload_folder(filename)
-        os.makedirs(upload_folder, exist_ok=True)
-        image_path = os.path.join(upload_folder, filename)
-        
-        # Save file asynchronously
-        await file.save(image_path)
-        
-        # Run synchronous classifier in thread pool
-        model_path = "openai/clip-vit-base-patch32"
-        classifier = Classify(model_path)
-        
-        # Wrap synchronous call in async thread executor
-        predicted_class, confidence = await asyncio.to_thread(
-            classifier.predict,  # Your synchronous method
-            image_path,
-            class_list
-        )
-        
-        return {
-            'message': 'Classification successful',
-            'filename': filename,
-            'results': {predicted_class: confidence}
-        }, 200
-        
-    except Exception as e:
-        return {'error': f'Error processing image: {str(e)}'}, 500
-        
-    except Exception as e:
-        return {'error': f'Error processing image: {str(e)}'}, 500
-        
+		filename = secure_filename(file.filename)
+		upload_folder = get_upload_folder(filename)
+		os.makedirs(upload_folder, exist_ok=True)
+		image_path = os.path.join(upload_folder, filename)
+		
+		# Save file asynchronously
+		await file.save(image_path)
+		
+		# Run synchronous classifier in thread pool
+		model_path = "openai/clip-vit-base-patch32"
+		classifier = Classify(model_path)
+		
+		# Wrap synchronous call in async thread executor
+		predicted_class, confidence = await asyncio.to_thread(
+			classifier.predict,  # Your synchronous method
+			image_path,
+			class_list
+		)
+		
+		return {
+			'message': 'Classification successful',
+			'filename': filename,
+			'results': {predicted_class: confidence}
+		}, 200
+		
+	except Exception as e:
+		return {'error': f'Error processing image: {str(e)}'}, 500
+		
+	except Exception as e:
+		return {'error': f'Error processing image: {str(e)}'}, 500
+		
 
 @app.route('/', methods=['GET'])
 async def index():
