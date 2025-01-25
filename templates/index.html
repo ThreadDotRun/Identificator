@@ -27,22 +27,7 @@
             <p><strong>Loss History:</strong></p>
             <ul id="finetune-loss-results"></ul>
         </div>
-
-        <!-- Single Image Classification Form -->
-        <div class="upload-form">
-            <h2>Classify Image</h2>
-            <form id="classify-form" enctype="multipart/form-data">
-                <p>Upload image for classification:</p>
-                <input type="file" id="image-file" name="file" accept="image/*" required>
-                <div class="image-preview" style="margin: 1em 0;">
-                    <img id="classimg" style="max-width: 300px; display: none;">
-                </div>
-                <p>CSV Class List<textarea id="classes-csv" name="classes" class="csv_classes" required 
-                     placeholder="e.g., cat,dog,bird"></textarea></p>
-                <button type="submit">Upload and Classify</button>
-            </form>
-        </div>
-
+        
         <!-- Batch Classification Form -->
         <div class="upload-form">
             <h2>Batch Classify Images</h2>
@@ -174,6 +159,13 @@
                 }
                 resultsList.appendChild(listItem);
             });
+        }
+
+        function showError(message) {
+            document.getElementById('error-container').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+
+            document.getElementById('error-message').textContent = message;
         }
 
         // Existing showResults and showError functions remain unchanged
