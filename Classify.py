@@ -35,20 +35,13 @@ class Classify:
 		return classes[pred_idx], round(probs[pred_idx].item(), 4)
 
 	# predict_batch remains unchanged
-	def predict_batch(self, image_paths: list[str]) -> list[tuple[str, float]]:
-		"""
-		Classify multiple images.
-		
-		:param image_paths: List of paths to image files
-		:return: List of tuples (predicted_class, confidence_score)
-		"""
+	def predict_batch(self, image_paths: list[str], class_list: list[str]) -> list[tuple]:
 		results = []
 		for image_path in image_paths:
 			try:
-				prediction = self.predict(image_path)
-				results.append((image_path, *prediction))
+				predicted_class, confidence = self.predict(image_path, class_list)
+				results.append((image_path, predicted_class, confidence))
 			except Exception as e:
 				print(f"Error processing {image_path}: {e}")
 				results.append((image_path, "error", 0.0))
 		return results
-
