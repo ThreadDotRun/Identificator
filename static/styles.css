@@ -117,3 +117,76 @@ H2
   text-align: left; /* Aligns text horizontally to the left */
   vertical-align: top; /* Aligns text vertically to the top */
 }
+.error
+{
+	background-color: black;
+	color: orangered;
+	font-family: monospace;
+	font-size: 12pt;
+	width: 80%; /* Makes the input box take up full width of its container */
+  height: 350px; /* Increases height for better visibility */
+  padding: 10px; /* Adds padding inside the textbox for comfort */
+  box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+  border: 1px solid #ccc; /* Adds a light border */
+  border-radius: 5px; /* Rounds the corners */
+  resize: vertical; /* Allows users to resize the textbox vertically */
+  overflow-y: auto; /* Ensures a vertical scrollbar appears when needed */
+  text-align: left; /* Aligns text horizontally to the left */
+  vertical-align: top; /* Aligns text vertically to the top */
+}
+/* Updated positioning for top-right placement */
+.auth-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 320px;
+    margin: 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border: 1px solid #e2e8f0;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+/* Compact form styling */
+.auth-form {
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+}
+
+/* Optimized elements for corner placement */
+.token-select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.auth-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+/* Hover effect for container */
+.auth-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 90%;
+        right: 50%;
+        transform: translateX(50%);
+        top: 10px;
+    }
+    
+    .auth-container:hover {
+        transform: translateX(50%) translateY(-2px);
+    }
+}

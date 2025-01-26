@@ -61,9 +61,46 @@
 
         <!-- Error Section -->
         <div id="error-container" class="error" style="display: none;">
+            <div class="error"
             <h2>Error</h2>
             <p id="error-message"></p>
         </div>
+        </div>
+    </div>
+    <!-- Auth Form Section -->
+    <div class="auth-container">
+        <h2>Authentication Required</h2>
+        <form id="authForm" class="auth-form">
+            <!-- Username Input -->
+            <div class="form-group">
+                <label for="username" class="required">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Username"
+                    required
+                    autocomplete="username"
+                >
+                label for="token" class="required">Token</label>
+                <input 
+                    type="text" 
+                    id="token" 
+                    name="token" 
+                    placeholder="Token"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="auth-button">
+                    Authenticate
+                    <span class="spinner"></span> <!-- For loading state -->
+                </button>
+            </div>
+        </form>
     </div>
 
     <script>
@@ -109,8 +146,8 @@
                 alert('Please select at least one file');
                 return;
             }
-            if (files.length > 5) {
-                alert('Maximum 5 files allowed per batch');
+            if (files.length > 10) {
+                alert('Maximum 10 files allowed per batch');
                 return;
             }
 
