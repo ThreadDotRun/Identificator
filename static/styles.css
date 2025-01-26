@@ -106,4 +106,14 @@ H2
 	color: yellow;
 	font-family: monospace;
 	font-size: 16pt;
+	width: 100%; /* Makes the input box take up full width of its container */
+  height: 350px; /* Increases height for better visibility */
+  padding: 10px; /* Adds padding inside the textbox for comfort */
+  box-sizing: border-box; /* Ensures padding doesn't affect width/height */
+  border: 1px solid #ccc; /* Adds a light border */
+  border-radius: 5px; /* Rounds the corners */
+  resize: vertical; /* Allows users to resize the textbox vertically */
+  overflow-y: auto; /* Ensures a vertical scrollbar appears when needed */
+  text-align: left; /* Aligns text horizontally to the left */
+  vertical-align: top; /* Aligns text vertically to the top */
 }

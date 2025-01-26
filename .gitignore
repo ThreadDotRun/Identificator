@@ -9,4 +9,6 @@
 *.jpg*
 *.gif*
 *media*
+*root_default_session*
 !Identificator.gif
+!carosel.png

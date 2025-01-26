@@ -34,6 +34,9 @@
             <form id="batch-classify-form" enctype="multipart/form-data">
                 <p>Upload multiple images (max 5):</p>
                 <input type="file" id="batch-files" name="files" accept="image/*" multiple required>
+                <div id="image-preview" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                    <img id="classimg" style="max-width: 300px; display: sticky;">
+                </div>
                 <p>CSV Class List<textarea id="batch-classes-csv" name="classes" class="csv_classes" required 
                      placeholder="e.g., cat,dog,bird"></textarea></p>
                 <button type="submit">Upload and Classify Batch</button>
@@ -87,7 +90,7 @@
                 alert('Error: Please enter at least one valid class');
                 return;
             }
-            if (elements.length > 5) {
+            if (elements.length > 10) {
                 alert('Error: Maximum 5 classes allowed');
                 return;
             }
@@ -167,9 +170,33 @@
 
             document.getElementById('error-message').textContent = message;
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('batch-files').addEventListener('change', function(e) {
+                const files = e.target.files; // Access the selected files
+                const container = document.getElementById('image-preview'); // The target container div
+                container.innerHTML = ''; // Clear the container before injecting new images
 
-        // Existing showResults and showError functions remain unchanged
-        // ...
+                if (files && files.length > 0) {
+                    Array.from(files).forEach(file => { // Iterate over all selected files
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const img = document.createElement('img'); // Create an image element
+                            img.src = event.target.result; // Set the image source
+                            img.style.display = 'block'; // Make the image visible
+                            img.style.maxWidth = '100px'; // Optional: Set max width for better layout
+                            img.style.margin = '5px'; // Optional: Add some margin
+                            container.appendChild(img); // Append the image to the container
+                        }
+                        reader.readAsDataURL(file); // Read the file as a data URL
+                    });
+                }
+            });
+        });
+
+
+
+
     </script>
 </body>
 </html>
