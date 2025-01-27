@@ -241,5 +241,27 @@ async def classify_batch_endpoint():
 async def index():
 	return await render_template('index.html')
 
+@app.route('/authform', methods=['GET', 'POST'])
+async def authform():
+	try:
+		if request.method == 'POST':
+			form_data = await request.form
+			username = form_data.get('username')
+			token = form_data.get('token')
+			
+			# Your processing logic here
+			return jsonify({
+				'message': 'User',
+				'username': username,
+				'token': token
+			}), 200
+		else:
+			# Return JSON for GET if needed, or keep HTML
+			return await render_template('index.html')
+	except Exception as e:
+		error_trace = traceback.format_exc()
+		print(f"Error Traceback: {error_trace}")
+		return jsonify({'error': str(e), 'traceback': error_trace}), 500
+
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port=5000)

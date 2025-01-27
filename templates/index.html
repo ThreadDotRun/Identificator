@@ -69,30 +69,31 @@
     </div>
     <!-- Auth Form Section -->
     <div class="auth-container">
-        <h2>Authentication Required</h2>
-        <form id="authForm" class="auth-form">
-            <!-- Username Input -->
-            <div class="form-group">
-                <label for="username" class="required">Username</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    name="username" 
-                    placeholder="Username"
-                    required
-                    autocomplete="username"
-                >
-                label for="token" class="required">Token</label>
-                <input 
-                    type="text" 
-                    id="token" 
-                    name="token" 
-                    placeholder="Token"
-                    required
-                    autocomplete="username"
+    <h2>Authentication Required</h2>
+    <form id="authForm" class="auth-form" method="POST"> 
+        <!-- Username Input -->
+        <div class="form-group">
+            <label for="username" class="required">Username</label>
+            <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                placeholder="Username"
+                required
+                autocomplete="username"
+            >
+
+            <label for="token" class="required">Token</label>
+            <input 
+                type="text" 
+                id="token" 
+                name="token" 
+                placeholder="Token"
+                required
+                autocomplete="off"
                 >
             </div>
-            
+
             <!-- Form Actions -->
             <div class="form-actions">
                 <button type="submit" class="auth-button">
@@ -102,6 +103,7 @@
             </div>
         </form>
     </div>
+
 
     <script>
         // Existing image preview and fine-tune logic remains unchanged
@@ -231,9 +233,30 @@
             });
         });
 
+        document.getElementById('authForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            // Fixed URL (no trailing comma)
+            const response = await fetch('/authform', {
+                method: 'POST',
+                body: formData,
+            });
 
+            // Handle non-JSON responses (e.g., 404 errors)
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server error:', errorText);
+                return;
+            }
 
-
+            try {
+                const result = await response.json();
+                console.log(result);
+            } catch (error) {
+                console.error('JSON parse error:', error);
+            }
+        });
     </script>
 </body>
 </html>
