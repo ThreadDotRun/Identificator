@@ -3,10 +3,10 @@ from DatabaseManager import DatabaseManager  # Ensure this file exists
 from datetime import datetime, timedelta
 
 # === CONFIGURE DATABASE CREDENTIALS ===
-DB_USER = "<user>"
-DB_PASSWORD = "<pw>"
-DB_HOST = "localhost"
-DB_NAME = "<your_app_db_name_in_Maria>"
+DB_USER = "ident_tdr"
+DB_PASSWORD = "8g76yfg87hs8gf7hfs8hgf"
+DB_HOST = "127.0.0.1"
+DB_NAME = "Identificator_db"
 
 async def test_database():
     db = DatabaseManager(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
