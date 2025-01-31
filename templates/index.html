@@ -1,262 +1,261 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ML Model Interface</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">   
+	<title>ML Model Interface</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">   
 </head>
 <body>
-    <div class="container">
-        <h1>Identificator</h1>
-        <h2>        
-            <p>Right now this uses 'openai/clip-vit-base-patch32' but this will soon be trainable and configurable.</p>
-        <h2>
+	<div class="container">
+		<h1>Identificator</h1>
+		<h2>		
+			<p>Right now this uses 'openai/clip-vit-base-patch32' but this will soon be trainable and configurable.</p>
+		<h2>
 
-        <!-- Fine-tuning Form -->
-        <div class="upload-form">
-            <h2>Fine-tune Model</h2>
-            <form id="finetune-form" enctype="multipart/form-data">
-                <p>Upload ZIP file containing image folders (coming soon!):</p>
-                <input type="file" id="zip-file" name="file" accept=".zip" required>
-                <button type="submit" disabled>Upload and Fine-tune</button>
-            </form>
-        </div>
+		<!-- Fine-tuning Form -->
+		<div class="upload-form">
+			<h2>Fine-tune Model</h2>
+			<form id="finetune-form" enctype="multipart/form-data">
+				<p>Upload ZIP file containing image folders (coming soon!):</p>
+				<input type="file" id="zip-file" name="file" accept=".zip" required>
+				<button type="submit" disabled>Upload and Fine-tune</button>
+			</form>
+		</div>
 
-        <!-- Fine-tuning Results Section -->
-        <div id="finetune-results-container" class="results" style="display: none;">
-            <h2>Fine-tuning Results</h2>
-            <p><strong>Loss History:</strong></p>
-            <ul id="finetune-loss-results"></ul>
-        </div>
-        
-        <!-- Batch Classification Form -->
-        <div class="upload-form">
-            <h2>Batch Classify Images</h2>
-            <form id="batch-classify-form" enctype="multipart/form-data">
-                <p>Upload multiple images (max 5):</p>
-                <input type="file" id="batch-files" name="files" accept="image/*" multiple required>
-                <div id="image-preview" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
-                    <img id="classimg" style="max-width: 300px; display: sticky;">
-                </div>
-                <p>CSV Class List<textarea id="batch-classes-csv" name="classes" class="csv_classes" required 
-                     placeholder="e.g., cat,dog,bird"></textarea></p>
-                <button type="submit">Upload and Classify Batch</button>
-            </form>
-        </div>
+		<!-- Fine-tuning Results Section -->
+		<div id="finetune-results-container" class="results" style="display: none;">
+			<h2>Fine-tuning Results</h2>
+			<p><strong>Loss History:</strong></p>
+			<ul id="finetune-loss-results"></ul>
+		</div>
+		
+		<!-- Batch Classification Form -->
+		<div class="upload-form">
+			<h2>Batch Classify Images</h2>
+			<form id="batch-classify-form" enctype="multipart/form-data">
+				<p>Upload multiple images (max 5):</p>
+				<input type="file" id="batch-files" name="files" accept="image/*" multiple required>
+				<div id="image-preview" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+					<img id="classimg" style="max-width: 300px; display: sticky;">
+				</div>
+				<p>CSV Class List<textarea id="batch-classes-csv" name="classes" class="csv_classes" required 
+					 placeholder="e.g., cat,dog,bird"></textarea></p>
+				<button type="submit">Upload and Classify Batch</button>
+			</form>
+		</div>
 
-        <!-- Classification Results Section -->
-        <div id="results-container" class="results" style="display: none;">
-            <h2>Classification Results</h2>
-            <p><strong>Image:</strong> <span id="image-name"></span></p>
-            <p><strong>Results:</strong></p>
-            <ul id="classification-results"></ul>
-        </div>
+		<!-- Classification Results Section -->
+		<div id="results-container" class="results" style="display: none;">
+			<h2>Classification Results</h2>
+			<p><strong>Image:</strong> <span id="image-name"></span></p>
+			<p><strong>Results:</strong></p>
+			<ul id="classification-results"></ul>
+		</div>
 
-        <!-- Batch Results Section -->
-        <div id="batch-results-container" class="results" style="display: none;">
-            <h2>Batch Classification Results</h2>
-            <p><strong>Classes:</strong> <span id="batch-classes"></span></p>
-            <p><strong>Results:</strong></p>
-            <ul id="batch-classification-results"></ul>
-        </div>
+		<!-- Batch Results Section -->
+		<div id="batch-results-container" class="results" style="display: none;">
+			<h2>Batch Classification Results</h2>
+			<p><strong>Classes:</strong> <span id="batch-classes"></span></p>
+			<p><strong>Results:</strong></p>
+			<ul id="batch-classification-results"></ul>
+		</div>
 
-        <!-- Error Section -->
-        <div id="error-container" class="error" style="display: none;">
-            <div class="error"
-            <h2>Error</h2>
-            <p id="error-message"></p>
-        </div>
-        </div>
-    </div>
-    <!-- Auth Form Section -->
-    <div class="auth-container">
-    <div class="auth_header">Authentication Required</div>
-    <form id="authForm" class="auth-form" method="POST"> 
-        <!-- Username Input -->
-        <div class="form-group">
-            <label for="username" class="required">Username</label>
-            <input 
-                type="text" 
-                id="username" 
-                name="username" 
-                placeholder="Username"
-                required
-                autocomplete="username"
-            >
+		<!-- Error Section -->
+		<div id="error-container" class="error" style="display: none;">
+			<div class="error"
+			<h2>Error</h2>
+			<p id="error-message"></p>
+		</div>
+		</div>
+	</div>
+	<!-- Auth Form Section -->
+	<div class="auth-container">
+	<div class="auth_header">Authentication Required</div>
+	<form id="authForm" class="auth-form" method="POST"> 
+		<!-- Username Input -->
+		<div class="form-group">
+			<label for="username" class="required">Username</label>
+			<input 
+				type="text" 
+				id="username" 
+				name="username" 
+				placeholder="Username"
+				required
+				autocomplete="username"
+			>
+			<label for="token" class="required">Token</label>
+			<input 
+				type="text" 
+				id="token" 
+				name="token" 
+				placeholder="Token"
+				required
+				autocomplete="off"
+				>
+			</div>
 
-            <label for="token" class="required">Token</label>
-            <input 
-                type="text" 
-                id="token" 
-                name="token" 
-                placeholder="Token"
-                required
-                autocomplete="off"
-                >
-            </div>
-
-            <!-- Form Actions -->
-            <div class="form-actions">
-                <button type="submit" class="auth-button">
-                    Authenticate
-                    <span class="spinner"></span> <!-- For loading state -->
-                </button>
-            </div>
-        </form>
-    </div>
+			<!-- Form Actions -->
+			<div class="form-actions">
+				<button type="submit" class="auth-button">
+					Authenticate
+					<span class="spinner"></span> <!-- For loading state -->
+				</button>
+			</div>
+		</form>
+	</div>
 
 
-    <script>
-        // Existing image preview and fine-tune logic remains unchanged
-        // ...
+	<script>
+		// Existing image preview and fine-tune logic remains unchanged
+		// ...
 
-        // Batch Classification Form Submission
-        document.getElementById('batch-classify-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
+		// Batch Classification Form Submission
+		document.getElementById('batch-classify-form').addEventListener('submit', async function(event) {
+			event.preventDefault();
 
-            // Get and sanitize classes
-            const csvInput = document.getElementById('batch-classes-csv');
-            let csvValue = csvInput.value.trim();
-            const sanitized = csvValue
-                .replace(/[^a-zA-Z,]/g, '')
-                .toLowerCase()
-                .replace(/,+/g, ',')
-                .replace(/^,|,$/g, '');
-            csvInput.value = sanitized;
-            const elements = sanitized.split(',').filter(e => e !== '');
+			// Get and sanitize classes
+			const csvInput = document.getElementById('batch-classes-csv');
+			let csvValue = csvInput.value.trim();
+			const sanitized = csvValue
+				.replace(/[^a-zA-Z,]/g, '')
+				.toLowerCase()
+				.replace(/,+/g, ',')
+				.replace(/^,|,$/g, '');
+			csvInput.value = sanitized;
+			const elements = sanitized.split(',').filter(e => e !== '');
 
-            // Validation
-            if (elements.length === 0) {
-                alert('Error: Please enter at least one valid class');
-                return;
-            }
-            if (elements.length > 10) {
-                alert('Error: Maximum 5 classes allowed');
-                return;
-            }
-            if (elements.some(e => !/^[a-z]+$/.test(e))) {
-                alert('Error: Classes must contain only letters');
-                return;
-            }
+			// Validation
+			if (elements.length === 0) {
+				alert('Error: Please enter at least one valid class');
+				return;
+			}
+			if (elements.length > 10) {
+				alert('Error: Maximum 5 classes allowed');
+				return;
+			}
+			if (elements.some(e => !/^[a-z]+$/.test(e))) {
+				alert('Error: Classes must contain only letters');
+				return;
+			}
 
-            // Prepare form data
-            const formData = new FormData();
-            const fileInput = document.getElementById('batch-files');
-            const files = fileInput.files;
+			// Prepare form data
+			const formData = new FormData();
+			const fileInput = document.getElementById('batch-files');
+			const files = fileInput.files;
 
-            // File validation
-            if (files.length === 0) {
-                alert('Please select at least one file');
-                return;
-            }
-            if (files.length > 10) {
-                alert('Maximum 10 files allowed per batch');
-                return;
-            }
+			// File validation
+			if (files.length === 0) {
+				alert('Please select at least one file');
+				return;
+			}
+			if (files.length > 10) {
+				alert('Maximum 10 files allowed per batch');
+				return;
+			}
 
-            // Add files and classes
-            Array.from(files).forEach(file => {
-                formData.append('files', file);
-            });
-            formData.append('classes', elements.join(','));
+			// Add files and classes
+			Array.from(files).forEach(file => {
+				formData.append('files', file);
+			});
+			formData.append('classes', elements.join(','));
 
-            try {
-                const response = await fetch('/classify/batch', {
-                    method: 'POST',
-                    body: formData
-                });
+			try {
+				const response = await fetch('/classify/batch', {
+					method: 'POST',
+					body: formData
+				});
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    showError(errorData.error || 'Batch processing failed');
-                    return;
-                }
+				if (!response.ok) {
+					const errorData = await response.json();
+					showError(errorData.error || 'Batch processing failed');
+					return;
+				}
 
-                const data = await response.json();
-                showBatchResults(data.classes, data.results);
-            } catch (error) {
-                showError('Failed to connect to the server. Please try again later.');
-            }
-        });
+				const data = await response.json();
+				showBatchResults(data.classes, data.results);
+			} catch (error) {
+				showError('Failed to connect to the server. Please try again later.');
+			}
+		});
 
-        function showBatchResults(classes, results) {
-            document.getElementById('batch-results-container').style.display = 'block';
-            document.getElementById('error-container').style.display = 'none';
-            
-            document.getElementById('batch-classes').textContent = classes.join(', ');
-            const resultsList = document.getElementById('batch-classification-results');
-            resultsList.innerHTML = '';
+		function showBatchResults(classes, results) {
+			document.getElementById('batch-results-container').style.display = 'block';
+			document.getElementById('error-container').style.display = 'none';
+			
+			document.getElementById('batch-classes').textContent = classes.join(', ');
+			const resultsList = document.getElementById('batch-classification-results');
+			resultsList.innerHTML = '';
 
-            results.forEach(result => {
-                const listItem = document.createElement('li');
-                if (result.error) {
-                    listItem.innerHTML = `
-                        <strong>${result.image}</strong>: 
-                        <span class="error-text">${result.error}</span>
-                    `;
-                } else {
-                    listItem.innerHTML = `
-                        <strong>${result.image}</strong>:
-                        ${result.predicted_class} (${result.confidence.toFixed(2)}%)
-                    `;
-                }
-                resultsList.appendChild(listItem);
-            });
-        }
+			results.forEach(result => {
+				const listItem = document.createElement('li');
+				if (result.error) {
+					listItem.innerHTML = `
+						<strong>${result.image}</strong>: 
+						<span class="error-text">${result.error}</span>
+					`;
+				} else {
+					listItem.innerHTML = `
+						<strong>${result.image}</strong>:
+						${result.predicted_class} (${result.confidence.toFixed(2)}%)
+					`;
+				}
+				resultsList.appendChild(listItem);
+			});
+		}
 
-        function showError(message) {
-            document.getElementById('error-container').style.display = 'block';
-            document.getElementById('results-container').style.display = 'none';
+		function showError(message) {
+			document.getElementById('error-container').style.display = 'block';
+			document.getElementById('results-container').style.display = 'none';
 
-            document.getElementById('error-message').textContent = message;
-        }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('batch-files').addEventListener('change', function(e) {
-                const files = e.target.files; // Access the selected files
-                const container = document.getElementById('image-preview'); // The target container div
-                container.innerHTML = ''; // Clear the container before injecting new images
+			document.getElementById('error-message').textContent = message;
+		}
+		
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('batch-files').addEventListener('change', function(e) {
+				const files = e.target.files; // Access the selected files
+				const container = document.getElementById('image-preview'); // The target container div
+				container.innerHTML = ''; // Clear the container before injecting new images
 
-                if (files && files.length > 0) {
-                    Array.from(files).forEach(file => { // Iterate over all selected files
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            const img = document.createElement('img'); // Create an image element
-                            img.src = event.target.result; // Set the image source
-                            img.style.display = 'block'; // Make the image visible
-                            img.style.maxWidth = '100px'; // Optional: Set max width for better layout
-                            img.style.margin = '5px'; // Optional: Add some margin
-                            container.appendChild(img); // Append the image to the container
-                        }
-                        reader.readAsDataURL(file); // Read the file as a data URL
-                    });
-                }
-            });
-        });
+				if (files && files.length > 0) {
+					Array.from(files).forEach(file => { // Iterate over all selected files
+						const reader = new FileReader();
+						reader.onload = function(event) {
+							const img = document.createElement('img'); // Create an image element
+							img.src = event.target.result; // Set the image source
+							img.style.display = 'block'; // Make the image visible
+							img.style.maxWidth = '100px'; // Optional: Set max width for better layout
+							img.style.margin = '5px'; // Optional: Add some margin
+							container.appendChild(img); // Append the image to the container
+						}
+						reader.readAsDataURL(file); // Read the file as a data URL
+					});
+				}
+			});
+		});
 
-        document.getElementById('authForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            
-            // Fixed URL (no trailing comma)
-            const response = await fetch('/authform', {
-                method: 'POST',
-                body: formData,
-            });
+		document.getElementById('authForm').addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const formData = new FormData(event.target);
+			
+			// Fixed URL (no trailing comma)
+			const response = await fetch('/authform', {
+				method: 'POST',
+				body: formData,
+			});
 
-            // Handle non-JSON responses (e.g., 404 errors)
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server error:', errorText);
-                return;
-            }
+			// Handle non-JSON responses (e.g., 404 errors)
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Server error:', errorText);
+				return;
+			}
 
-            try {
-                const result = await response.json();
-                console.log(result);
-            } catch (error) {
-                console.error('JSON parse error:', error);
-            }
-        });
-    </script>
+			try {
+				const result = await response.json();
+				console.log(result);
+			} catch (error) {
+				console.error('JSON parse error:', error);
+			}
+		});
+	</script>
 </body>
 </html>

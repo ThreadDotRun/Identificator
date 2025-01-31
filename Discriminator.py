@@ -7,6 +7,20 @@ from FineTune import FineTune
 from Classify import Classify
 import asyncio
 import traceback
+from DatabaseManager import DatabaseManager
+
+# Database connection details
+DB_USER = "ident_tdr"
+DB_PASSWORD = "8g76yfg87hs8gf7hfs8hgf"
+DB_HOST = "127.0.0.1"
+DB_NAME = "Identificator_db"
+db = DatabaseManager(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
+
+class_list_length = 10
+max_classes_allowed = 10
+
+# Initialize DatabaseManager
+db_manager = DatabaseManager(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
 app = Quart(__name__)
 
@@ -104,8 +118,8 @@ async def classify_endpoint():
 		class_list = [cls.strip() for cls in classes_str.split(',') if cls.strip()]
 		if not class_list:
 			return {'error': 'Empty class list'}, 400
-		if len(class_list) > 5:
-			return {'error': 'Maximum 5 classes allowed'}, 400
+		if len(class_list) > max_classes_allowed:
+			return {f'error': 'Maximum {max_classes_allowed} classes allowed'}, 400
 
 		# File handling
 		if not allowed_file(file.filename):
@@ -179,7 +193,7 @@ async def classify_batch_endpoint():
 		class_list = [cls.strip() for cls in classes_str.split(',') if cls.strip()]
 		if not class_list:
 			return jsonify({'error': 'Empty class list'}), 400
-		if len(class_list) > 5:
+		if len(class_list) > class_list_length:
 			return jsonify({'error': 'Maximum 5 classes allowed'}), 400
 
 		# Process and validate files
@@ -248,20 +262,52 @@ async def authform():
 			form_data = await request.form
 			username = form_data.get('username')
 			token = form_data.get('token')
-			
-			# Your processing logic here
-			return jsonify({
-				'message': 'User',
-				'username': username,
-				'token': token
-			}), 200
+
+			# Check if the user exists in the database
+			user_data = await db_manager.get_user_by_email(username)
+
+			if user_data:
+				stored_token = user_data[2]  # Assuming token is in the third column
+
+				if stored_token == token:
+					return jsonify({
+						'message': 'User authenticated',
+						'username': username,
+						'token': token
+					}), 200
+				else:
+					return jsonify({'error': 'Invalid token'}), 401
+			else:
+				return jsonify({'error': 'User not found'}), 404
 		else:
-			# Return JSON for GET if needed, or keep HTML
 			return await render_template('index.html')
+
 	except Exception as e:
 		error_trace = traceback.format_exc()
 		print(f"Error Traceback: {error_trace}")
 		return jsonify({'error': str(e), 'traceback': error_trace}), 500
+
+@app.route('/register', methods=['POST'])
+async def register_user():
+	try:
+		form_data = await request.form
+		email = form_data.get('email')
+		auth_token = form_data.get('auth_token')
+		token_expiry = form_data.get('token_expiry')  # Ensure correct datetime format
+
+		# Create user in the database
+		user_created = await db_manager.create_user(email, auth_token, token_expiry)
+
+		if user_created:
+			return jsonify({'message': 'User registered successfully'}), 201
+		else:
+			return jsonify({'error': 'Failed to register user'}), 500
+
+	except Exception as e:
+		error_trace = traceback.format_exc()
+		print(f"Error Traceback: {error_trace}")
+		return jsonify({'error': str(e), 'traceback': error_trace}), 500
+
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port=5000)
