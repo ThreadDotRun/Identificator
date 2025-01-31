@@ -82,7 +82,7 @@ H2
 {
 	text-align: center;
 	font-size: 14pt;
-	color: darkorange;
+	color: black;
 	width:100%;
 }
 .results
@@ -184,4 +184,52 @@ H2
     padding: 0.5rem 2rem 0.5rem 0.75rem;
     font-size: 0.9rem;
     width: 100%;
+}
+/* Add additional styles if needed */
+.auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+.auth-header {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.form-actions {
+    text-align: center;
+}
+.auth-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.auth-button:hover {
+    background-color: #0056b3;
+}
+.error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
 }

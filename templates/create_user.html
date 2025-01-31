@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-header">Create New User</div>
+        <form id="create-user-form" class="auth-form" method="POST" action="{{ url_for('register') }}">
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email" class="required">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                >
+                <button type="button" id="send-token-button" class="auth-button" style="margin-top: 10px;">
+                    Send Token
+                </button>
+            </div>
+
+            <!-- Token Input -->
+            <div class="form-group">
+                <label for="auth_token" class="required">Token</label>
+                <input
+                    type="text"
+                    id="auth_token"
+                    name="auth_token"
+                    placeholder="Token will be sent to your email"
+                    required
+                    autocomplete="off"
+                    readonly
+                >
+            </div>
+
+            <!-- Token Expiry Input -->
+            <div class="form-group">
+                <label for="token_expiry" class="required">Token Expiry</label>
+                <input
+                    type="datetime-local"
+                    id="token_expiry"
+                    name="token_expiry"
+                    required
+                >
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="auth-button">
+                    Create User
+                    <span class="spinner"></span> <!-- For loading state -->
+                </button>
+            </div>
+        </form>
+
+        <!-- Link to Login Page -->
+        <div style="text-align: center; margin-top: 20px;">
+            <p>Already have an account? <a href="{{ url_for('authform') }}">Login here</a>.</p>
+        </div>
+
+        <!-- Error Message Display -->
+        <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Function to generate a random token
+        function generateToken() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < 16; i++) {
+                token += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return token;
+        }
+
+        // Handle "Send Token" button click
+        document.getElementById('send-token-button').addEventListener('click', async function() {
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showError('Please enter your email address.');
+                return;
+            }
+
+            // Generate a random token
+            const token = generateToken();
+
+            // Send the token to the server to email it to the user
+            try {
+                const response = await fetch('/send-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        token: token,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(errorData.error || 'Failed to send token.');
+                    return;
+                }
+
+                // Pre-fill the token field with the generated token
+                document.getElementById('auth_token').value = token;
+                alert('Token sent to your email!');
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again later.');
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('create-user-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Get form data
+            const formData = new FormData(event.target);
+            const email = formData.get('email');
+            const auth_token = formData.get('auth_token');
+            const token_expiry = formData.get('token_expiry');
+
+            // Validate inputs
+            if (!email || !auth_token || !token_expiry) {
+                showError('All fields are required.');
+                return;
+            }
+
+            // Send data to the server
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        auth_token: auth_token,
+                        token_expiry: token_expiry,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(errorData.error || 'Failed to create user.');
+                    return;
+                }
+
+                const data = await response.json();
+                alert('User created successfully!');
+                window.location.href = '/authform'; // Redirect to login page
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again later.');
+            }
+        });
+
+        // Function to display error messages
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

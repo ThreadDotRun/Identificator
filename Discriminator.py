@@ -287,27 +287,76 @@ async def authform():
 		print(f"Error Traceback: {error_trace}")
 		return jsonify({'error': str(e), 'traceback': error_trace}), 500
 
-@app.route('/register', methods=['POST'])
-async def register_user():
-	try:
-		form_data = await request.form
-		email = form_data.get('email')
-		auth_token = form_data.get('auth_token')
-		token_expiry = form_data.get('token_expiry')  # Ensure correct datetime format
+@app.route('/register', methods=['GET', 'POST'])
+async def register():
+	if request.method == 'GET':
+		# Serve the Create New User page
+		return await render_template('create_user.html')
+	elif request.method == 'POST':
+		# Handle form submission
+		try:
+			data = await request.json
+			email = data.get('email')
+			auth_token = data.get('auth_token')
+			token_expiry = data.get('token_expiry')
 
-		# Create user in the database
-		user_created = await db_manager.create_user(email, auth_token, token_expiry)
+			# Validate required fields
+			if not email or not auth_token or not token_expiry:
+				return jsonify({'error': 'All fields are required'}), 400
 
-		if user_created:
-			return jsonify({'message': 'User registered successfully'}), 201
-		else:
-			return jsonify({'error': 'Failed to register user'}), 500
+			# Create user in the database
+			user_created = await db_manager.create_user(email, auth_token, token_expiry)
 
-	except Exception as e:
-		error_trace = traceback.format_exc()
-		print(f"Error Traceback: {error_trace}")
-		return jsonify({'error': str(e), 'traceback': error_trace}), 500
+			if user_created:
+				return jsonify({'message': 'User registered successfully'}), 201
+			else:
+				return jsonify({'error': 'Failed to register user'}), 500
 
+		except Exception as e:
+			error_trace = traceback.format_exc()
+			print(f"Error Traceback: {error_trace}")
+			return jsonify({'error': str(e), 'traceback': error_trace}), 500
+
+import smtplib
+from email.mime.text import MIMEText
+from quart import request, jsonify
+
+# Email configuration (update with your SMTP server details)
+SMTP_SERVER = 'localhost'
+SMTP_PORT = 1025
+SMTP_USERNAME = ''
+SMTP_PASSWORD = ''
+
+FROM_EMAIL = 'tdrsvr@localhost.com'
+
+@app.route('/send-token', methods=['POST'])
+async def send_token():
+    try:
+        data = await request.json
+        email = data.get('email')
+        token = data.get('token')
+
+        if not email or not token:
+            return jsonify({'error': 'Email and token are required'}), 400
+
+        # Create the email message
+        subject = 'Your Verification Token'
+        body = f'Your verification token is: {token}'
+        msg = MIMEText(body)
+        msg['Subject'] = subject
+        msg['From'] = FROM_EMAIL
+        msg['To'] = email
+
+        # Send the email
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            #server.starttls() - Renable in production !!***
+            #server.login(SMTP_USERNAME, SMTP_PASSWORD) # Failed to send token: SMTP AUTH extension not supported by server. (local temp fix is comment)
+            server.sendmail(FROM_EMAIL, [email], msg.as_string())
+
+        return jsonify({'message': 'Token sent successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Failed to send token: {str(e)}'}), 500
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port=5000)
