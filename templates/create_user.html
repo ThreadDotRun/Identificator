@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <div class="auth-container">
+    <div class="auth-container active">
         <div class="auth-header">Create New User</div>
         <form id="create-user-form" class="auth-form" method="POST" action="{{ url_for('register') }}">
             <!-- Email Input -->
@@ -18,7 +18,7 @@
                     name="email"
                     placeholder="Enter your email"
                     required
-                    autocomplete="email"
+                    autocomplete="off"
                 >
                 <button type="button" id="send-token-button" class="auth-button" style="margin-top: 10px;">
                     Send Token

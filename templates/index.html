@@ -5,36 +5,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <!-- Add FontAwesome for the login icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Style for the login icon */
-        .login-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #007bff;
-        }
-
-        /* Hide the login pane by default */
-        .auth-container {
-            display: none;
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            z-index: 1000;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Show the login pane when active */
-        .auth-container.active {
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -45,7 +15,7 @@
 
         <h1>Identificator</h1>
         <h2>        
-            <p>Right now this uses 'openai/clip-vit-base-patch32' but this will soon be trainable and configurable.</p>
+            <p>Categorize Images and Fine Tune Image Categorization</p>
         </h2>
 
         <!-- Fine-tuning Form -->
@@ -53,8 +23,11 @@
             <h2>Fine-tune Model</h2>
             <form id="finetune-form" enctype="multipart/form-data">
                 <p>Upload ZIP file containing image folders (coming soon!):</p>
-                <input type="file" id="zip-file" name="file" accept=".zip" required>
-                <button type="submit" disabled>Upload and Fine-tune</button>
+                <div class="file-input-container">
+                    <input type="file" id="zip-file" name="file" accept=".zip" required>
+                    <label for="zip-file" class="custom-file-button">Choose ZIP File</label>
+                </div>
+                <div><button type="submit" disabled>Upload and Fine-tune</button></div>
             </form>
         </div>
 
@@ -70,7 +43,10 @@
             <h2>Batch Classify Images</h2>
             <form id="batch-classify-form" enctype="multipart/form-data">
                 <p>Upload multiple images (max 5):</p>
-                <input type="file" id="batch-files" name="files" accept="image/*" multiple required>
+                <div class="file-input-container">
+                    <input type="file" id="batch-files" name="files" accept="image/*" multiple required>
+                    <label for="batch-files" class="custom-file-button">Choose Image Files</label>
+                </div>
                 <div id="image-preview" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
                 <img id="classimg" style="max-width: 300px; display: sticky;">
                 <p>CSV Class List<textarea id="batch-classes-csv" name="classes" class="csv_classes" required 
@@ -117,7 +93,7 @@
                     name="username" 
                     placeholder="Username"
                     required
-                    autocomplete="username"
+                    autocomplete="off"
                 >
                 <label for="token" class="required">Token</label>
                 <input 
