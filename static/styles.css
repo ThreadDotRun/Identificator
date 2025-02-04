@@ -280,7 +280,7 @@ h2 {
     opacity: 0;
     cursor: pointer;
     height: 100%;
-    width: 90%;
+    width: 100%;
 }
 
 /* Custom button for file input */
@@ -298,4 +298,10 @@ h2 {
 
 .file-input-container .custom-file-button:hover {
     background-color: #0056b3; /* Darker blue on hover */
+}
+a:-webkit-any-link 
+{
+    text-align: center;
+    margin-top: 20px;
+    color: white;
 }

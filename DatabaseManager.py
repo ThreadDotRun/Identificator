@@ -22,13 +22,16 @@ class DatabaseManager:
 			print(f"Error connecting to the database: {e}")
 			raise  # Re-raise the exception to handle it in the calling method
 
-	async def create_user(self, email, auth_token, token_expiry):
+	async def create_user(self, email, auth_token):
 		conn = None
 		try:
 			conn = await self._get_connection()
 			if conn is None:
 				print("Failed to establish database connection")
 				return False
+			
+			# Calculate the token expiry time to be 12 hours from now
+			token_expiry = datetime.now() + timedelta(hours=12)
 			
 			async with conn.cursor() as cursor:
 				query = "INSERT INTO users (email, auth_token, token_expiry) VALUES (%s, %s, %s)"
@@ -46,6 +49,7 @@ class DatabaseManager:
 					print("Database connection closed")
 				except Exception as e:
 					print(f"Error closing connection: {e}")
+
 
 
 	async def get_user_by_email(self, email):
