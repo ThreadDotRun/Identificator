@@ -130,20 +130,21 @@ img {
     overflow-y: auto;
 }
 
-h1, h2 {
+h1{
     text-align: center;
-    color: #ffffff;
+    color: lightskyblue;
 }
 
 h1 {
-    font-size: 32px;
+    font-size: 36px;
     margin-bottom: 20px;
 }
 
 h2 {
-    font-size: 24px;
+    font-size: 16px;
     color: lightcyan;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .auth_header {
